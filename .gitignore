@@ -1,0 +1,70 @@
+# =========================
+# Java compiled files
+# =========================
+*.class
+
+# =========================
+# Build directories
+# =========================
+out/
+build/
+target/
+
+# =========================
+# Java archives
+# =========================
+*.jar
+*.war
+*.ear
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# IDE settings
+# =========================
+
+# VS Code
+.vscode/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# NetBeans
+nbproject/private/
+
+# =========================
+# macOS system files
+# =========================
+.DS_Store
+
+# =========================
+# Environment / secrets
+# =========================
+.env
+.env.*
+
+# =========================
+# Temporary files
+# =========================
+tmp/
+temp/
+
+# =========================
+# Database local files
+# =========================
+*.db
+*.sqlite
+
+# =========================
+# OS generated files
+# =========================
+Thumbs.db
