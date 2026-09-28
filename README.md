@@ -84,6 +84,12 @@ Date: 2026-01-14
 - Source: `src/`
 - SQL schema/dumps: `database/`, `Dump20260114/`
 
+## Demo
+
+[put video here]
+
+
+
 ## Project structure (high level)
 
 - `src/` — Java source files (UI, DB helpers, AI client, managers)
