@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class StudentMenu {
     private static Scanner scanner = new Scanner(System.in);
-    
+
     public static void showMenu(int studentId, Connection conn) {
         while (true) {
             System.out.println("\n=== STUDENT MENU ===");
@@ -15,10 +15,10 @@ public class StudentMenu {
             System.out.println("6. View My Reservations");
             System.out.println("7. Logout");
             System.out.print("Enter choice: ");
-            
+
             int choice = scanner.nextInt();
             scanner.nextLine();
-            
+
             switch (choice) {
                 case 1:
                     BookManager.browseAvailableBooks(conn);
@@ -46,7 +46,7 @@ public class StudentMenu {
             }
         }
     }
-    
+
     private static void viewMyBorrowedBooks(int studentId, Connection conn) {
         try {
             String sql = """
@@ -59,11 +59,11 @@ public class StudentMenu {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, studentId);
             ResultSet rs = pstmt.executeQuery();
-            
+
             System.out.println("\n📚 Your Borrowed Books:");
             System.out.println("ID | Title | Author | Borrow Date | Due Date | Status | Fine");
             System.out.println("----------------------------------------------------------------");
-            
+
             boolean hasBooks = false;
             while (rs.next()) {
                 hasBooks = true;
@@ -77,7 +77,7 @@ public class StudentMenu {
                     rs.getDouble("FineAmount")
                 );
             }
-            
+
             if (!hasBooks) {
                 System.out.println("No borrowed books found.");
             }
@@ -85,30 +85,30 @@ public class StudentMenu {
             System.out.println("Error: " + e.getMessage());
         }
     }
-    
+
     private static void reserveBook(int studentId, Connection conn) {
         try {
             System.out.print("Enter ISBN to reserve: ");
             String isbn = scanner.nextLine();
-            
-            // Check if book exists and is unavailable
+
+
             String checkSql = "SELECT Available_Copies FROM Book WHERE ISBN = ?";
             PreparedStatement checkStmt = conn.prepareStatement(checkSql);
             checkStmt.setString(1, isbn);
             ResultSet rs = checkStmt.executeQuery();
-            
+
             if (rs.next()) {
                 if (rs.getInt("Available_Copies") > 0) {
                     System.out.println("❌ Book is available for borrowing. No need to reserve.");
                     return;
                 }
-                
-                // Insert reservation
+
+
                 String sql = "INSERT INTO Reservation (StudentID, ISBN, ReserveDate) VALUES (?, ?, CURDATE())";
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 pstmt.setInt(1, studentId);
                 pstmt.setString(2, isbn);
-                
+
                 int rows = pstmt.executeUpdate();
                 if (rows > 0) {
                     System.out.println("✅ Book reserved successfully!");
@@ -120,7 +120,7 @@ public class StudentMenu {
             System.out.println("Error: " + e.getMessage());
         }
     }
-    
+
     private static void viewMyReservations(int studentId, Connection conn) {
         try {
             String sql = """
@@ -133,11 +133,11 @@ public class StudentMenu {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, studentId);
             ResultSet rs = pstmt.executeQuery();
-            
+
             System.out.println("\n📋 Your Reservations:");
             System.out.println("ID | Title | Author | Reserve Date | Status");
             System.out.println("------------------------------------------------");
-            
+
             boolean hasReservations = false;
             while (rs.next()) {
                 hasReservations = true;
@@ -149,7 +149,7 @@ public class StudentMenu {
                     rs.getString("Status")
                 );
             }
-            
+
             if (!hasReservations) {
                 System.out.println("No reservations found.");
             }

@@ -7,13 +7,13 @@ public class BookDetailsDialog extends JDialog {
     private String title;
     private String author;
 
-    /**
-     * @param parent owning frame
-     * @param isbn book isbn
-     * @param autoAsk if true, will open the AI chat and ask about the book automatically
-     */
+
+
+
+
+
     public BookDetailsDialog(Frame parent, String isbn, boolean autoAsk) {
-    super(parent, "Book Details", false); // non-modal so AI can appear alongside
+    super(parent, "Book Details", false);
     this.isbn = isbn;
     setSize(500, 400);
     setLocationRelativeTo(parent);
@@ -36,7 +36,7 @@ public class BookDetailsDialog extends JDialog {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                // Info panel
+
                 JPanel infoPanel = new JPanel(new GridBagLayout());
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.insets = new Insets(5, 5, 5, 5);
@@ -57,13 +57,13 @@ public class BookDetailsDialog extends JDialog {
         addLabelValue(infoPanel, gbc, "Times Borrowed:",
             String.valueOf(rs.getInt("TotalBorrows")), 8);
 
-                // Status indicator
+
                 String status = rs.getInt("Available_Copies") > 0 ? "✅ Available" : "⛔ Checked Out";
                 addLabelValue(infoPanel, gbc, "Status:", status, 9);
 
                 panel.add(infoPanel, BorderLayout.CENTER);
 
-                // Cover image placeholder
+
                 JLabel coverLabel = new JLabel("📖", SwingConstants.CENTER);
                 coverLabel.setFont(new Font("Segoe UI", Font.PLAIN, 48));
                 coverLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
@@ -71,9 +71,9 @@ public class BookDetailsDialog extends JDialog {
 
                 JPanel leftPanel = new JPanel(new BorderLayout());
                 leftPanel.add(coverLabel, BorderLayout.NORTH);
-                leftPanel.add(new JPanel(), BorderLayout.CENTER); // Spacer
+                leftPanel.add(new JPanel(), BorderLayout.CENTER);
 
-                // Main layout with image on left
+
                 JPanel mainPanel = new JPanel(new BorderLayout(15, 0));
                 mainPanel.add(leftPanel, BorderLayout.WEST);
                 mainPanel.add(infoPanel, BorderLayout.CENTER);
@@ -89,11 +89,11 @@ public class BookDetailsDialog extends JDialog {
                     SwingConstants.CENTER), BorderLayout.CENTER);
         }
 
-        // Close button
+
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(e -> dispose());
 
-        // Ask AI button
+
         JButton askButton = new JButton("Ask AI about this book");
         askButton.addActionListener(e -> askAI());
 
@@ -104,9 +104,9 @@ public class BookDetailsDialog extends JDialog {
 
         add(panel);
 
-        // If autoAsk requested, perform it (after showing so the chat can appear)
+
         if (autoAsk) {
-            // show the dialog non-modally and then trigger the AI
+
             setVisible(true);
             askAI();
             return;
@@ -132,14 +132,14 @@ public class BookDetailsDialog extends JDialog {
                 title == null ? "" : title,
                 author == null ? "" : author,
                 isbn == null ? "" : isbn);
-        // Prefer the dialog owner (the frame that created this dialog)
+
         Window owner = getOwner();
         if (owner instanceof StudentDashboard sd) {
             sd.askAI(question);
             return;
         }
 
-        // Fallback: if owner is a frame, open a local chat; otherwise open without owner
+
         Frame frameOwner = null;
         if (owner instanceof Frame) frameOwner = (Frame) owner;
         AIChatDialog chat = new AIChatDialog(frameOwner);

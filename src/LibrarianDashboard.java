@@ -14,8 +14,8 @@ public class LibrarianDashboard extends JFrame {
 
         tabbedPane = new JTabbedPane();
 
-        // Add tabs
-        tabbedPane.addTab("📚 Manage Books", new BookBrowserPanel(0, true)); // 0 = no student
+
+        tabbedPane.addTab("📚 Manage Books", new BookBrowserPanel(0, true));
         tabbedPane.addTab("➕ Add Book", new JPanel() {
             {
                 JButton addBookButton = new JButton("Open Add Book Form");
@@ -43,7 +43,7 @@ public class LibrarianDashboard extends JFrame {
 
         add(tabbedPane);
 
-        // Menu bar
+
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem logoutItem = new JMenuItem("Logout");
@@ -59,7 +59,7 @@ public class LibrarianDashboard extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Form fields
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(new JLabel("ISBN:"), gbc);
@@ -95,7 +95,7 @@ public class LibrarianDashboard extends JFrame {
         JTextField copiesField = new JTextField(20);
         panel.add(copiesField, gbc);
 
-        // Add button
+
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.gridwidth = 2;
@@ -208,12 +208,12 @@ public class LibrarianDashboard extends JFrame {
     }
 
     private void showCategoryStats(JTextArea area) {
-        // Similar implementation
+
         area.setText("Category statistics report will appear here");
     }
 
     private void showStudentActivity(JTextArea area) {
-        // Similar implementation
+
         area.setText("Student activity report will appear here");
     }
 
@@ -238,11 +238,11 @@ public class LibrarianDashboard extends JFrame {
             Object[][] data = new Object[rows.size()][];
             for (int i = 0; i < rows.size(); i++) data[i] = rows.get(i);
 
-            // Use a DefaultTableModel so we can refresh/update easily
+
             javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel(data, columns) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    return false; // read-only cells
+                    return false;
                 }
             };
 
@@ -251,7 +251,7 @@ public class LibrarianDashboard extends JFrame {
             JScrollPane scrollPane = new JScrollPane(table);
             panel.add(scrollPane, BorderLayout.CENTER);
 
-            // Buttons for managing students
+
             JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 8));
             JButton editBtn = new JButton("Edit");
             JButton deleteBtn = new JButton("Delete");
@@ -267,7 +267,7 @@ public class LibrarianDashboard extends JFrame {
                 String email = (String) model.getValueAt(row, 2);
                 String phone = (String) model.getValueAt(row, 3);
 
-                // Show edit dialog
+
                 JDialog dlg = new JDialog(this, "Edit Student", true);
                 dlg.setSize(400, 250);
                 dlg.setLocationRelativeTo(this);

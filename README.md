@@ -1,10 +1,12 @@
-Library Management System - README
-BY:
-Hana Kouiriti
-Merjen Dursunova
+# Library Management System
 
-PROJECT STRUCTURE:
+A Java Swing desktop application for managing a library, with separate student and librarian workflows, MySQL storage, reporting, and an optional AI assistant.
+
+## Project Structure
+
+```text
 LibrarySystem/
+<<<<<<< HEAD
 ├── src/
 │ ├── DBUtil.java (Database connection utility)
 │ ├── LibraryApp.java (Main application with login)
@@ -140,35 +142,61 @@ Or use the convenience script(s):
 ```bash
 ./setup.sh   # applies helpful environment hints
 ./run.sh     # compiles and runs the application (reads env exports in the script)
+=======
+├── src/                 Java application source
+├── lib/                 JDBC and other library jars
+├── database/            Database schema and setup SQL
+├── Dump20260114/        Additional SQL dumps
+├── run.sh               Compile and launch the application
+└── setup.sh             Setup helper (see note below)
+>>>>>>> 6d4e18f (fixed readme)
 ```
 
-## AI configuration
+## Requirements
 
-- Environment variables the app reads:
-  - `AI_API_URL` — API endpoint for chat completions (OpenRouter/OpenAI-style)
-  - `AI_API_KEY` — API key for the endpoint
-  - `AI_MODEL` — preferred model string
-  - `YOUR_API_KEY` and `OPENROUTER_MODEL` — optional fallbacks used by `AIClient` if provided
+- Java JDK 11 or newer
+- MySQL 8.0 or newer
+- MySQL Connector/J in `lib/`
 
-- Logs: raw API error bodies are written to `logs/ai_error_<timestamp>.json` for debugging when provider errors occur.
+## Database Setup
 
-## Report generation / charts
+1. Create or initialize the `library_system` database using `database/library_system.sql` in MySQL Workbench or the MySQL command line.
+2. In `src/DBUtil.java`, set the JDBC URL, username, and password for your local MySQL server.
 
-- `ReportGenerator.java` originally used JFreeChart (org.jfree.\*). In the current workspace JFreeChart jars are not bundled, so `ReportGenerator` has been replaced with a lightweight table-based view so the project compiles out-of-the-box.
-- To re-enable charts:
-  1.  Add JFreeChart (and any required supporting jars) to `lib/`.
-  2.  Compile with the jars on the classpath, e.g. `javac -cp "lib/*:out" ...` or set up Gradle/Maven with `org.jfree` dependencies.
+> **Note:** `setup.sh` currently replaces `database/library_system.sql` with a placeholder. Do not run it when you need to preserve the existing schema.
 
-## Known issues & notes
+## Build and Run
 
-- Report charts: missing JFreeChart jars will cause compile errors if you restore the original charting code.
-- Provider policy: some OpenRouter models may be blocked by provider-side policy settings (you may see 404 policy error JSON). Adjust provider privacy settings or switch models.
-- Delete operations: deleting a `Student` that has borrow/reservation records may be blocked by foreign key constraints — either remove dependent records first or adapt the DB to use cascade rules.
+From the project directory, run:
 
-## Where to look in code
+```bash
+chmod +x run.sh
+./run.sh
+```
 
-- AI: `src/AIClient.java`, `src/AIChatDialog.java`
-- Student UI: `src/StudentDashboard.java`, `src/BookBrowserPanel.java`, `src/BookDetailsDialog.java`
-- Librarian UI: `src/LibrarianDashboard.java`
-- Borrow/Return + fine: `src/BorrowReturnPanel.java`
-- DB helper: `src/DBUtil.java`
+The script compiles the Java files with the jars in `lib/` and launches `LibraryGUI`.
+
+## Features
+
+### Student
+
+- Browse and search books, and view book details
+- Borrow or reserve books
+- View borrowing history and manage a profile
+- Ask questions using the optional AI assistant
+
+### Librarian
+
+- Add, update, and remove books
+- Manage student records
+- Review borrowing, reservation, and overdue information
+- Generate reports
+
+## Optional AI Assistant
+
+The AI assistant requires a compatible chat-completions API and a valid API key. Configure the provider settings through the environment variables supported by `src/AIClient.java`. The launch script includes OpenRouter-related placeholders; replace them with your own settings before using the assistant.
+
+## Notes
+
+- Report output currently uses a table-based view. JFreeChart is not bundled with this project.
+- Removing a student with related borrow or reservation records may be prevented by database foreign-key constraints.

@@ -16,20 +16,20 @@ public class LoginWindow extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        // Header
+
         JLabel header = new JLabel("Library Management System", SwingConstants.CENTER);
         header.setFont(new Font("Segoe UI", Font.BOLD, 24));
         header.setForeground(new Color(0, 70, 140));
         add(header, BorderLayout.NORTH);
 
-        // Main panel
+
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // User type
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         mainPanel.add(new JLabel("Login as:"), gbc);
@@ -38,7 +38,7 @@ public class LoginWindow extends JFrame {
     userTypeCombo.setPreferredSize(new Dimension(240, 32));
         mainPanel.add(userTypeCombo, gbc);
 
-        // ID Field
+
         gbc.gridx = 0;
         gbc.gridy = 1;
         mainPanel.add(new JLabel("ID:"), gbc);
@@ -47,7 +47,7 @@ public class LoginWindow extends JFrame {
     idField.setPreferredSize(new Dimension(240, 32));
         mainPanel.add(idField, gbc);
 
-        // Email Field
+
         gbc.gridx = 0;
         gbc.gridy = 2;
         mainPanel.add(new JLabel("Email:"), gbc);
@@ -56,7 +56,7 @@ public class LoginWindow extends JFrame {
     emailField.setPreferredSize(new Dimension(240, 32));
         mainPanel.add(emailField, gbc);
 
-        // Password Panel (initially hidden)
+
         passwordPanel = new JPanel(new GridBagLayout());
         passwordPanel.setVisible(false);
         GridBagConstraints gbc2 = new GridBagConstraints();
@@ -76,22 +76,22 @@ public class LoginWindow extends JFrame {
         gbc.gridwidth = 2;
         mainPanel.add(passwordPanel, gbc);
 
-        // Login Button
+
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
     JButton loginButton = new JButton("Login");
     loginButton.setBackground(new Color(0, 120, 215));
-    // Make the button text color black as requested
+
     loginButton.setForeground(Color.BLACK);
     loginButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-    // Slightly larger clickable area for better UX
+
     loginButton.setPreferredSize(new Dimension(140, 40));
         mainPanel.add(loginButton, gbc);
-        // In LoginWindow constructor, add after login button
+
         gbc.gridx = 0;
-        gbc.gridy = 6; // Adjust row number based on your layout
+        gbc.gridy = 6;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
     JButton signupButton = new JButton("New Student? Sign Up");
@@ -101,7 +101,7 @@ public class LoginWindow extends JFrame {
         signupButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         signupButton.addActionListener(e -> openSignupDialog());
         mainPanel.add(signupButton, gbc);
-    // Demo credentials label (placed above signup)
+
     gbc.gridy = 5;
     gbc.gridwidth = 2;
     JLabel demoLabel = new JLabel("<html><i>Demo: Student ID 1001, Email alice@uni.edu</i></html>");
@@ -109,14 +109,14 @@ public class LoginWindow extends JFrame {
     demoLabel.setHorizontalAlignment(SwingConstants.CENTER);
     mainPanel.add(demoLabel, gbc);
 
-        // Add components to frame
+
         add(mainPanel, BorderLayout.CENTER);
 
-        // Event Listeners
+
         userTypeCombo.addActionListener(e -> togglePasswordField());
         loginButton.addActionListener(e -> performLogin());
 
-        // Enter key support
+
         idField.addActionListener(e -> performLogin());
         emailField.addActionListener(e -> performLogin());
         passwordField.addActionListener(e -> performLogin());
@@ -142,7 +142,7 @@ public class LoginWindow extends JFrame {
 
         try {
             if (userType.equals("Student")) {
-                // Student needs ID
+
                 if (idText.isEmpty()) {
                     JOptionPane.showMessageDialog(this,
                             "Please enter Student ID!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -155,7 +155,7 @@ public class LoginWindow extends JFrame {
                     JOptionPane.showMessageDialog(this,
                             "Invalid student credentials!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            } else { // Librarian - ID is optional
+            } else {
                 String password = new String(passwordField.getPassword());
                 if (password.isEmpty()) {
                     JOptionPane.showMessageDialog(this,
@@ -235,7 +235,7 @@ public class LoginWindow extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Form fields
+
         JTextField studentIdField = new JTextField(15);
         JTextField nameField = new JTextField(15);
         JTextField emailField = new JTextField(15);
@@ -251,7 +251,7 @@ public class LoginWindow extends JFrame {
         addFormField(formPanel, gbc, "Password*:", passwordField, row++);
         addFormField(formPanel, gbc, "Confirm Password*:", confirmPasswordField, row++);
 
-        // Buttons
+
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.gridwidth = 2;
@@ -260,7 +260,7 @@ public class LoginWindow extends JFrame {
 
     JButton registerButton = new JButton("Register");
     registerButton.setBackground(new Color(0, 150, 0));
-    // Make the register button text black so it's readable on light backgrounds
+
     registerButton.setForeground(Color.BLACK);
         registerButton.addActionListener(e -> {
             if (registerStudent(studentIdField, nameField, emailField,
@@ -276,7 +276,7 @@ public class LoginWindow extends JFrame {
         buttonPanel.add(cancelButton);
         formPanel.add(buttonPanel, gbc);
 
-        // Footer note
+
         gbc.gridy = ++row;
         JLabel noteLabel = new JLabel("* Required fields", SwingConstants.CENTER);
         noteLabel.setForeground(Color.GRAY);
@@ -300,7 +300,7 @@ public class LoginWindow extends JFrame {
             JTextField emailField, JTextField phoneField,
             JPasswordField passwordField, JPasswordField confirmPasswordField,
             JDialog dialog) {
-        // Get values
+
         String studentIdStr = studentIdField.getText().trim();
         String name = nameField.getText().trim();
         String email = emailField.getText().trim();
@@ -308,7 +308,7 @@ public class LoginWindow extends JFrame {
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
 
-        // Validation
+
         if (studentIdStr.isEmpty() || name.isEmpty() || email.isEmpty() ||
                 password.isEmpty() || confirmPassword.isEmpty()) {
             JOptionPane.showMessageDialog(dialog,
@@ -331,9 +331,9 @@ public class LoginWindow extends JFrame {
         try {
             int studentId = Integer.parseInt(studentIdStr);
 
-            // Check if student ID already exists
+
             try (Connection conn = DBUtil.getConnection()) {
-                // Check student ID
+
                 String checkIdSql = "SELECT COUNT(*) FROM Student WHERE StudentID = ?";
                 PreparedStatement checkIdStmt = conn.prepareStatement(checkIdSql);
                 checkIdStmt.setInt(1, studentId);
@@ -346,7 +346,7 @@ public class LoginWindow extends JFrame {
                     return false;
                 }
 
-                // Check email
+
                 String checkEmailSql = "SELECT COUNT(*) FROM Student WHERE Email = ?";
                 PreparedStatement checkEmailStmt = conn.prepareStatement(checkEmailSql);
                 checkEmailStmt.setString(1, email);
@@ -359,7 +359,7 @@ public class LoginWindow extends JFrame {
                     return false;
                 }
 
-                // Insert new student
+
                 String insertSql = "INSERT INTO Student (StudentID, Name, Email, Phone) VALUES (?, ?, ?, ?)";
                 PreparedStatement insertStmt = conn.prepareStatement(insertSql);
                 insertStmt.setInt(1, studentId);
@@ -370,7 +370,7 @@ public class LoginWindow extends JFrame {
                 int rows = insertStmt.executeUpdate();
 
                 if (rows > 0) {
-                    // Also add to Librarian table with password (optional enhancement)
+
                     try {
                         String librarianSql = """
                                 INSERT INTO Librarian (Name, Email, Password)
@@ -382,7 +382,7 @@ public class LoginWindow extends JFrame {
                         librarianStmt.setString(3, password);
                         librarianStmt.executeUpdate();
                     } catch (SQLException e) {
-                        // Ignore if duplicate - student can still login as student
+
                     }
 
                     JOptionPane.showMessageDialog(dialog,
@@ -393,7 +393,7 @@ public class LoginWindow extends JFrame {
                                     "Logging you in automatically...",
                             "Success", JOptionPane.INFORMATION_MESSAGE);
 
-                    // Auto-login
+
                     openStudentDashboard(studentId);
 
                     return true;

@@ -1,5 +1,5 @@
 
-// TestConnection.java
+
 import java.sql.*;
 
 public class TestConnection {
@@ -8,7 +8,7 @@ public class TestConnection {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/library_system",
                     "root",
-                    "yourpassword" // Your MySQL password
+                    "yourpassword"
             );
             System.out.println("✅ Connected to library_system database!");
 

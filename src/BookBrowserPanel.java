@@ -16,7 +16,7 @@ public class BookBrowserPanel extends JPanel {
 
         setLayout(new BorderLayout());
 
-        // Search panel
+
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JTextField searchField = new JTextField(30);
         JButton searchButton = new JButton("Search");
@@ -27,7 +27,7 @@ public class BookBrowserPanel extends JPanel {
         searchPanel.add(searchButton);
         searchPanel.add(refreshButton);
 
-        // Table (include Category and Publisher columns to match loaded data)
+
         String[] columns = { "ISBN", "Title", "Author", "Year", "Available", "Total", "Category", "Publisher" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -40,7 +40,7 @@ public class BookBrowserPanel extends JPanel {
         bookTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(bookTable);
 
-        // Button panel
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JButton detailsButton = new JButton("View Details");
         JButton actionButton = isLibrarian ? new JButton("Delete Book") : new JButton("Borrow Book");
@@ -52,15 +52,15 @@ public class BookBrowserPanel extends JPanel {
             buttonPanel.add(reserveButton);
         }
 
-        // Add components
+
         add(searchPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Load data
+
         loadBooks("");
 
-        // Event listeners
+
         searchButton.addActionListener(e -> loadBooks(searchField.getText()));
         refreshButton.addActionListener(e -> loadBooks(""));
         searchField.addActionListener(e -> loadBooks(searchField.getText()));
@@ -76,7 +76,7 @@ public class BookBrowserPanel extends JPanel {
     }
 
     private void loadBooks(String searchTerm) {
-        tableModel.setRowCount(0); // Clear table
+        tableModel.setRowCount(0);
 
         try (Connection conn = DBUtil.getConnection()) {
             String sql = """
@@ -149,7 +149,7 @@ public class BookBrowserPanel extends JPanel {
             return;
         }
 
-        // Check if student already borrowed this book
+
         try (Connection conn = DBUtil.getConnection()) {
             String checkSql = """
                     SELECT COUNT(*) FROM BorrowRecord
@@ -175,11 +175,11 @@ public class BookBrowserPanel extends JPanel {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try (Connection conn = DBUtil.getConnection()) {
-                // START TRANSACTION
+
                 conn.setAutoCommit(false);
 
                 try {
-                    // 1. Insert borrow record (trigger will update Available_Copies)
+
                     String sql = """
                             INSERT INTO BorrowRecord (StudentID, ISBN, BorrowDate, DueDate, Status)
                             VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 'Borrowed')
@@ -190,7 +190,7 @@ public class BookBrowserPanel extends JPanel {
 
                     int rows = pstmt.executeUpdate();
                     if (rows > 0) {
-                        // 2. Update any active reservation
+
                         String updateReservationSql = """
                                 UPDATE Reservation
                                 SET Status = 'Fulfilled'
@@ -201,16 +201,16 @@ public class BookBrowserPanel extends JPanel {
                         updateStmt.setString(2, isbn);
                         updateStmt.executeUpdate();
 
-                        // COMMIT transaction
+
                         conn.commit();
 
                         JOptionPane.showMessageDialog(this,
                                 "✅ Book borrowed successfully!\nDue Date: " +
                                         java.time.LocalDate.now().plusDays(14));
-                        loadBooks(""); // Refresh table
+                        loadBooks("");
                     }
                 } catch (SQLException e) {
-                    // ROLLBACK on error
+
                     conn.rollback();
                     JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
                 } finally {
@@ -281,7 +281,7 @@ public class BookBrowserPanel extends JPanel {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try (Connection conn = DBUtil.getConnection()) {
-                // Check if book is borrowed
+
                 String checkSql = "SELECT COUNT(*) FROM BorrowRecord WHERE ISBN = ? AND Status = 'Borrowed'";
                 PreparedStatement checkStmt = conn.prepareStatement(checkSql);
                 checkStmt.setString(1, isbn);
@@ -293,7 +293,7 @@ public class BookBrowserPanel extends JPanel {
                     return;
                 }
 
-                // Delete book
+
                 String deleteSql = "DELETE FROM Book WHERE ISBN = ?";
                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
                 deleteStmt.setString(1, isbn);
@@ -301,7 +301,7 @@ public class BookBrowserPanel extends JPanel {
                 int rows = deleteStmt.executeUpdate();
                 if (rows > 0) {
                     JOptionPane.showMessageDialog(this, "Book deleted successfully!");
-                    loadBooks(""); // Refresh table
+                    loadBooks("");
                 }
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());

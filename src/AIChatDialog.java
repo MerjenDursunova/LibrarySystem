@@ -11,9 +11,9 @@ public class AIChatDialog extends JDialog {
     private JButton newChatBtn;
     private JComboBox<String> historyCombo;
 
-    // In-memory session store: each session is the full chat text
+
     private final List<String> sessions = new ArrayList<>();
-    private int currentSessionIndex = -1; // -1 when unsaved
+    private int currentSessionIndex = -1;
 
     public AIChatDialog(Frame owner) {
         super(owner, "Library AI Assistant", false);
@@ -29,7 +29,7 @@ public class AIChatDialog extends JDialog {
         JScrollPane scroll = new JScrollPane(chatArea);
         add(scroll, BorderLayout.CENTER);
 
-        // Top controls: New Chat and history selector
+
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
         newChatBtn = new JButton("New Chat");
         historyCombo = new JComboBox<>();
@@ -84,7 +84,7 @@ public class AIChatDialog extends JDialog {
     }
 
     private void startNewChat() {
-        // Save existing session if it has content
+
         if (!chatArea.getText().isBlank()) saveCurrentSession();
         chatArea.setText("");
         currentSessionIndex = -1;
@@ -98,11 +98,11 @@ public class AIChatDialog extends JDialog {
         appendMessage("You", text);
         inputField.setText("");
 
-        // Disable input while waiting
+
         inputField.setEnabled(false);
         sendBtn.setEnabled(false);
 
-        // Insert a Thinking placeholder that we'll replace when done
+
         appendMessage("AI", "Thinking...");
         new SwingWorker<String, Void>() {
             @Override
@@ -127,10 +127,10 @@ public class AIChatDialog extends JDialog {
     }
 
     public void askAndShow(String question) {
-        // Ensure dialog visible
+
         if (!isVisible()) setVisible(true);
         appendMessage("You", question);
-        // Disable input while waiting
+
         inputField.setEnabled(false);
         sendBtn.setEnabled(false);
         appendMessage("AI", "Thinking...");

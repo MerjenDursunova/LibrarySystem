@@ -18,10 +18,8 @@ public class StudentDashboard extends JFrame {
         setSize(900, 600);
         setLocationRelativeTo(null);
 
-        // Create tabbed interface
         tabbedPane = new JTabbedPane();
 
-        // Add tabs
         tabbedPane.addTab("📖 Browse Books", new BookBrowserPanel(studentId, false));
         tabbedPane.addTab("📚 My Borrowed Books", createBorrowedBooksPanel());
         tabbedPane.addTab("⏰ My Reservations", createReservationsPanel());
@@ -29,21 +27,18 @@ public class StudentDashboard extends JFrame {
 
         add(tabbedPane);
 
-    // AI Chat floating button (bottom-left)
-    JButton aiButton = new JButton("AI");
-    aiButton.setToolTipText("Ask the Library AI assistant");
-    aiButton.setBackground(new Color(255, 255, 255));
-    aiButton.setFocusPainted(false);
-    aiButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    aiButton.addActionListener(e -> openAIChat());
+        JButton aiButton = new JButton("AI");
+        aiButton.setToolTipText("Ask the Library AI assistant");
+        aiButton.setBackground(new Color(255, 255, 255));
+        aiButton.setFocusPainted(false);
+        aiButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        aiButton.addActionListener(e -> openAIChat());
 
-    // Place the button in a small overlay panel
-    JPanel overlay = new JPanel(new BorderLayout());
-    overlay.setOpaque(false);
-    overlay.add(aiButton, BorderLayout.WEST);
-    add(overlay, BorderLayout.SOUTH);
+        JPanel overlay = new JPanel(new BorderLayout());
+        overlay.setOpaque(false);
+        overlay.add(aiButton, BorderLayout.WEST);
+        add(overlay, BorderLayout.SOUTH);
 
-        // Logout button in menu
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem logoutItem = new JMenuItem("Logout");
@@ -56,7 +51,7 @@ public class StudentDashboard extends JFrame {
         fileMenu.add(exitItem);
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
-        // Add to constructor after creating menuBar
+
 
     }
 
@@ -67,16 +62,13 @@ public class StudentDashboard extends JFrame {
         aiChatDialog.setVisible(true);
     }
 
-    /**
-     * Public helper so other panels can reuse the same chat window and send a question to it.
-     */
     public void askAI(String question) {
         if (aiChatDialog == null) {
             aiChatDialog = new AIChatDialog(this);
         }
-        // Ensure the dialog is visible and brought to front so the student sees it.
+
         aiChatDialog.setVisible(true);
-        // Briefly toggle always-on-top to bring to front on some platforms
+
         aiChatDialog.setAlwaysOnTop(true);
         aiChatDialog.toFront();
         aiChatDialog.requestFocus();
@@ -119,7 +111,7 @@ public class StudentDashboard extends JFrame {
             pstmt.setInt(1, studentId);
             ResultSet rs = pstmt.executeQuery();
 
-            // Get row count
+
             rs.last();
             int rowCount = rs.getRow();
             rs.beforeFirst();
@@ -145,7 +137,7 @@ public class StudentDashboard extends JFrame {
 
     private void returnBook(int borrowId) {
         try (Connection conn = DBUtil.getConnection()) {
-            // Calculate fine if overdue
+
             String sql = """
                     UPDATE BorrowRecord
                     SET ReturnDate = CURDATE(), Status = 'Returned'
@@ -191,7 +183,6 @@ public class StudentDashboard extends JFrame {
                 addLabelValue(panel, gbc, "Email:", rs.getString("Email"), 2);
                 addLabelValue(panel, gbc, "Phone:", rs.getString("Phone"), 3);
 
-                // Statistics
                 String statsSql = """
                         SELECT
                             COUNT(*) as TotalBorrows,
@@ -217,20 +208,19 @@ public class StudentDashboard extends JFrame {
             e.printStackTrace();
         }
 
-        // Buttons: Logout and Delete Account
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 8));
         JButton logoutBtn = new JButton("Logout");
         JButton deleteBtn = new JButton("Delete Account");
 
         logoutBtn.addActionListener(e -> logout());
 
-    deleteBtn.addActionListener(e -> {
+        deleteBtn.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this,
                     "Are you sure you want to permanently delete your account? This cannot be undone.",
                     "Delete Account", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (confirm != JOptionPane.YES_OPTION) return;
+            if (confirm != JOptionPane.YES_OPTION)
+                return;
 
-            // Attempt to delete the student record. If there are related records, the DB may reject this.
             try (java.sql.Connection conn = DBUtil.getConnection()) {
                 String sql = "DELETE FROM Student WHERE StudentID = ?";
                 java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -238,7 +228,7 @@ public class StudentDashboard extends JFrame {
                 int rows = pstmt.executeUpdate();
                 if (rows > 0) {
                     JOptionPane.showMessageDialog(this, "Your account has been deleted.");
-                    // Return to login window
+
                     SwingUtilities.invokeLater(() -> {
                         LoginWindow login = new LoginWindow();
                         login.setVisible(true);
@@ -255,14 +245,13 @@ public class StudentDashboard extends JFrame {
             }
         });
 
-        // Make delete button visually prominent (red) to indicate destructive action
         try {
             deleteBtn.setForeground(Color.WHITE);
-            deleteBtn.setBackground(new Color(196, 40, 28)); // red
+            deleteBtn.setBackground(new Color(196, 40, 28));
             deleteBtn.setOpaque(true);
             deleteBtn.setBorderPainted(false);
         } catch (Exception ex) {
-            // If LAF forbids background, at least set the foreground to red
+
             deleteBtn.setForeground(Color.RED);
         }
 

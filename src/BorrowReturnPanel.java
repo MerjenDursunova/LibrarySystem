@@ -16,13 +16,13 @@ public class BorrowReturnPanel extends JPanel {
 
         setLayout(new BorderLayout(10, 10));
 
-        // Title
+
         JLabel titleLabel = new JLabel(isLibrarian ? "📊 Manage All Borrowings" : "📚 Your Borrowed Books",
                 SwingConstants.CENTER);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        // Table
+
         String[] columns = isLibrarian
                 ? new String[] { "Borrow ID", "Student", "Book", "Borrow Date", "Due Date", "Status", "Fine" }
                 : new String[] { "Borrow ID", "Book", "Borrow Date", "Due Date", "Status", "Fine" };
@@ -44,7 +44,7 @@ public class BorrowReturnPanel extends JPanel {
         borrowTable.getColumnModel().getColumn(0).setPreferredWidth(80);
         JScrollPane scrollPane = new JScrollPane(borrowTable);
 
-        // Button panel
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         JButton refreshButton = new JButton("🔄 Refresh");
@@ -62,15 +62,14 @@ public class BorrowReturnPanel extends JPanel {
             buttonPanel.add(returnButton);
         }
 
-        // Add components
         add(titleLabel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Load data
+
         loadBorrowings();
 
-        // Event listeners
+
         refreshButton.addActionListener(e -> loadBorrowings());
 
         returnButton.addActionListener(e -> {
@@ -176,7 +175,7 @@ public class BorrowReturnPanel extends JPanel {
 
     private void returnBook(int borrowId) {
         try (Connection conn = DBUtil.getConnection()) {
-            // Get book info for confirmation
+
             String infoSql = """
                     SELECT b.Title, br.DueDate, DATEDIFF(CURDATE(), br.DueDate) AS DaysOverdue
                     FROM BorrowRecord br
@@ -204,7 +203,7 @@ public class BorrowReturnPanel extends JPanel {
                 if (confirm == JOptionPane.YES_OPTION) {
                     conn.setAutoCommit(false);
                     try {
-                        // Update borrow record (trigger will handle Available_Copies)
+
                         String updateSql = """
                                 UPDATE BorrowRecord
                                 SET ReturnDate = CURDATE(), Status = 'Returned', FineAmount = ?
@@ -220,7 +219,7 @@ public class BorrowReturnPanel extends JPanel {
                             JOptionPane.showMessageDialog(this,
                                     "✅ Book returned successfully!" +
                                             (fine > 0 ? "\nFine applied: $" + String.format("%.2f", fine) : ""));
-                            // REFRESH THE TABLE
+
                             loadBorrowings();
                         } else {
                             JOptionPane.showMessageDialog(this,
@@ -243,7 +242,7 @@ public class BorrowReturnPanel extends JPanel {
 
     private void calculateFine(int borrowId) {
         try (Connection conn = DBUtil.getConnection()) {
-            // Compute fine in Java to avoid DB stored-procedure dependency
+
             String sql = "SELECT DueDate, Status FROM BorrowRecord WHERE BorrowID = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, borrowId);
@@ -258,8 +257,9 @@ public class BorrowReturnPanel extends JPanel {
             java.time.LocalDate dueDate = due.toLocalDate();
             java.time.LocalDate today = java.time.LocalDate.now();
             long daysOverdue = java.time.temporal.ChronoUnit.DAYS.between(dueDate, today);
-            if (daysOverdue < 0) daysOverdue = 0;
-            double rate = 0.50; // $0.50 per day
+            if (daysOverdue < 0)
+                daysOverdue = 0;
+            double rate = 0.50;
             double fine = daysOverdue * rate;
 
             String msg;
@@ -272,9 +272,10 @@ public class BorrowReturnPanel extends JPanel {
             int confirm = JOptionPane.showConfirmDialog(this,
                     "Calculate fine for Borrow ID " + borrowId + "?\n" + msg,
                     "Calculate Fine", JOptionPane.YES_NO_OPTION);
-            if (confirm != JOptionPane.YES_OPTION) return;
+            if (confirm != JOptionPane.YES_OPTION)
+                return;
 
-            // Persist the fine and update status if needed
+
             String upd = "UPDATE BorrowRecord SET FineAmount = ?, Status = ? WHERE BorrowID = ?";
             PreparedStatement ups = conn.prepareStatement(upd);
             String newStatus = (daysOverdue > 0) ? "Overdue" : status;

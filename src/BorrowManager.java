@@ -5,13 +5,13 @@ public class BorrowManager {
 
     public static void borrowBook(int studentId, Connection conn, Scanner scanner) {
         try {
-            // Show available books first
+
             BookManager.browseAvailableBooks(conn);
 
             System.out.print("\nEnter ISBN to borrow: ");
             String isbn = scanner.nextLine();
 
-            // Check if book is available
+
             String checkSql = "SELECT Available_Copies FROM Book WHERE ISBN = ?";
             PreparedStatement checkStmt = conn.prepareStatement(checkSql);
             checkStmt.setString(1, isbn);
@@ -24,7 +24,7 @@ public class BorrowManager {
                     return;
                 }
 
-                // Check if student already borrowed this book and hasn't returned
+
                 String checkBorrowSql = """
                         SELECT COUNT(*) FROM BorrowRecord
                         WHERE StudentID = ? AND ISBN = ? AND Status IN ('Borrowed', 'Overdue')
@@ -39,7 +39,7 @@ public class BorrowManager {
                     return;
                 }
 
-                // Insert borrow record (trigger will update Available_Copies)
+
                 String sql = """
                         INSERT INTO BorrowRecord (StudentID, ISBN, BorrowDate, DueDate, Status)
                         VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 'Borrowed')
@@ -53,7 +53,7 @@ public class BorrowManager {
                     System.out.println("✅ Book borrowed successfully!");
                     System.out.println("Due Date: " + java.time.LocalDate.now().plusDays(14));
 
-                    // Update any active reservation for this book by this student
+
                     String updateReservationSql = """
                             UPDATE Reservation
                             SET Status = 'Fulfilled'
@@ -74,7 +74,7 @@ public class BorrowManager {
 
     public static void returnBook(int studentId, Connection conn, Scanner scanner) {
         try {
-            // Show student's borrowed books
+
             String borrowedSql = """
                     SELECT br.BorrowID, b.Title, b.Author, br.BorrowDate, br.DueDate
                     FROM BorrowRecord br
@@ -109,7 +109,7 @@ public class BorrowManager {
             int borrowId = scanner.nextInt();
             scanner.nextLine();
 
-            // Calculate fine if overdue
+
             String checkFineSql = """
                     SELECT DATEDIFF(CURDATE(), DueDate) AS DaysOverdue
                     FROM BorrowRecord
@@ -123,12 +123,12 @@ public class BorrowManager {
             if (rs2.next()) {
                 int daysOverdue = rs2.getInt("DaysOverdue");
                 if (daysOverdue > 0) {
-                    fine = daysOverdue * 0.50; // $0.50 per day
+                    fine = daysOverdue * 0.50;
                     System.out.printf("⚠️  Book is %d days overdue. Fine: $%.2f\n", daysOverdue, fine);
                 }
             }
 
-            // Update borrow record (trigger will update Available_Copies)
+
             String returnSql = """
                     UPDATE BorrowRecord
                     SET ReturnDate = CURDATE(), Status = 'Returned', FineAmount = ?

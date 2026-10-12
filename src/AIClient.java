@@ -5,25 +5,25 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 
 public class AIClient {
-    // Reads endpoint, API key and model from environment variables.
-    // Also supports OpenRouter-style variables as a fallback.
-    // Inspector-style defaults (do NOT hardcode secrets in source control):
-    // [Header("OpenRouter Settings")]
-    // [Tooltip("OpenRouter API Key. Do NOT hardcode secrets in source control — set
-    // this in the Inspector at runtime or use the YOUR_API_KEY environment
-    // variable.")]
 
-    // [Tooltip("Model to request from OpenRouter")]
-    // public String model = "openai/gpt-oss-20b:free";
-    // [TextArea]
+
+
+
+
+
+
+
+
+
+
     private static final String API_URL = System.getenv().getOrDefault("AI_API_URL",
             System.getenv().getOrDefault("OPENROUTER_API_URL", "https://openrouter.ai/api/v1/chat/completions"));
     private static final String API_KEY = System.getenv().getOrDefault("AI_API_KEY", System.getenv().getOrDefault(
             "YOUR_API_KEY", "YOUR_API_KEY"));
     private static final String API_MODEL = System.getenv().getOrDefault("AI_MODEL",
             System.getenv().getOrDefault("OPENROUTER_MODEL", "google/gemma-3-27b-it:free"));
-    // System prompt to instruct the assistant to avoid markdown/newline escapes and
-    // be brief.
+
+
     private static final String SYSTEM_PROMPT = "You are the Library AI Assistant. Follow these rules when replying: " +
             "(1) Be very brief and answer in plain sentences. " +
             "(2) Do NOT use Markdown, headings, bullets, or formatting characters (no **, no ##, no backticks, no lists). "
@@ -34,27 +34,27 @@ public class AIClient {
             +
             "(5) Identify as the Library Assistant in one short phrase at the start if relevant.";
 
-    /**
-     * Send a query using an OpenRouter-like chat completions API. Returns the
-     * assistant message
-     * content (first choice) or an error string starting with "[AI Error]" on
-     * failure.
-     */
+
+
+
+
+
+
     public static String sendQuery(String query) {
         try {
             HttpClient client = HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(10))
                     .build();
-            // Use endpoint variable for clarity (user-suggested)
+
             String endpoint = API_URL;
-            // Try a small fallback list of models: configured model first, then gpt-4o-mini
+
             String[] tryModels = new String[] { API_MODEL, "your_ai_model" };
             Exception lastException = null;
             String lastErrorBody = null;
 
             for (String model : tryModels) {
                 try {
-                    // Build messages array including a system prompt and the user message
+
                     String payload = String.format(
                             "{\"model\":\"%s\",\"messages\":[{\"role\":\"system\",\"content\":\"%s\"},{\"role\":\"user\",\"content\":\"%s\"}]}",
                             escapeJson(model), escapeJson(SYSTEM_PROMPT), escapeJson(query));
@@ -75,7 +75,7 @@ public class AIClient {
 
                     if (response.statusCode() < 200 || response.statusCode() >= 300) {
                         lastErrorBody = response.body();
-                        // write raw error body for debugging
+
                         try {
                             java.nio.file.Path logsDir = java.nio.file.Paths.get("logs");
                             if (!java.nio.file.Files.exists(logsDir))
@@ -83,10 +83,10 @@ public class AIClient {
                             String ts = String.valueOf(java.time.Instant.now().toEpochMilli());
                             java.nio.file.Files.writeString(logsDir.resolve("ai_error_" + ts + ".json"), lastErrorBody);
                         } catch (Exception writeEx) {
-                            // ignore logging failure
+
                         }
 
-                        // If policy 404, and message suggests data policy, try next model in list
+
                         String body = response.body();
                         try {
                             int m = body.indexOf("\"message\"");
@@ -98,26 +98,26 @@ public class AIClient {
                                     String msg = body.substring(q1 + 1, q2);
                                     if (response.statusCode() == 404 && msg.toLowerCase()
                                             .contains("no endpoints found matching your data policy")) {
-                                        // try next model in list
+
                                         continue;
                                     }
                                     return "[AI Error] HTTP " + response.statusCode() + ": " + msg;
                                 }
                             }
                         } catch (Exception ex) {
-                            // fallthrough
+
                         }
                         return "[AI Error] HTTP " + response.statusCode() + ": " + body;
                     }
 
                     String body = response.body();
 
-                    // Try to extract choices[0].message.content
+
                     String content = extractChoiceContent(body);
                     if (content != null && !content.isEmpty())
                         return sanitizeResponse(content);
 
-                    // Fallback content extraction
+
                     int idx = body.indexOf("\"content\"");
                     if (idx >= 0) {
                         int colon = body.indexOf(':', idx);
@@ -133,12 +133,12 @@ public class AIClient {
                     return sanitizeResponse(body);
                 } catch (Exception e) {
                     lastException = e;
-                    // try next model
+
                     continue;
                 }
             }
 
-            // If we reached here, all attempts failed
+
             if (lastErrorBody != null) {
                 String lowered = lastErrorBody.toLowerCase();
                 if (lowered.contains("no endpoints found matching your data policy")) {
@@ -174,7 +174,7 @@ public class AIClient {
         if (resp == null)
             return null;
         try {
-            // look for "choices" then first "message" then "content"
+
             int choices = resp.indexOf("\"choices\"");
             if (choices < 0)
                 return null;
@@ -202,17 +202,17 @@ public class AIClient {
         if (s == null)
             return null;
         try {
-            // Replace escaped newline sequences and real newlines with a space
+
             String out = s.replace("\\n", " ").replace("\\r", " ").replace('\n', ' ').replace('\r', ' ');
-            // Remove common markdown markers: #, *, `
+
             out = out.replaceAll("\"?\\*+\"?", "");
             out = out.replaceAll("#+ ", "");
             out = out.replaceAll("`+", "");
-            // Collapse multiple whitespace into single space
+
             out = out.replaceAll("\\s+", " ");
-            // Trim
+
             out = out.trim();
-            // Limit length to a reasonable number to keep answers brief (optional)
+
             if (out.length() > 2000)
                 out = out.substring(0, 2000) + "...";
             return out;

@@ -183,7 +183,7 @@ public class LibrarianMenu {
 
             switch (reportChoice) {
                 case 1:
-                    // Most popular books
+
                     String sql1 = """
                             SELECT b.Title, b.Author, COUNT(br.BorrowID) AS BorrowCount
                             FROM Book b
@@ -196,7 +196,7 @@ public class LibrarianMenu {
                     break;
 
                 case 2:
-                    // Category statistics
+
                     String sql2 = """
                             SELECT c.Name AS Category, COUNT(b.ISBN) AS BookCount,
                                    SUM(b.Total_Copies) AS TotalCopies,
@@ -209,7 +209,7 @@ public class LibrarianMenu {
                     break;
 
                 case 3:
-                    // Student activity
+
                     String sql3 = """
                             SELECT s.StudentID, s.Name, COUNT(br.BorrowID) AS TotalBorrows,
                                    SUM(CASE WHEN br.Status = 'Overdue' THEN 1 ELSE 0 END) AS OverdueCount
@@ -237,13 +237,13 @@ public class LibrarianMenu {
         ResultSetMetaData meta = rs.getMetaData();
         int columnCount = meta.getColumnCount();
 
-        // Print headers
+
         for (int i = 1; i <= columnCount; i++) {
             System.out.print(meta.getColumnName(i) + " | ");
         }
         System.out.println("\n" + "-".repeat(columnCount * 20));
 
-        // Print data
+
         while (rs.next()) {
             for (int i = 1; i <= columnCount; i++) {
                 System.out.print(rs.getString(i) + " | ");

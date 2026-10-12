@@ -15,7 +15,7 @@ public class LibraryApp {
             System.out.print("Enter choice: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:

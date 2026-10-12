@@ -22,16 +22,16 @@ public class AddBookDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Load publishers and categories
+
         loadPublishersAndCategories();
 
-        // Form fields
+
         addField(mainPanel, gbc, "ISBN*:", isbnField = new JTextField(20), 0);
         addField(mainPanel, gbc, "Title*:", titleField = new JTextField(20), 1);
         addField(mainPanel, gbc, "Author*:", authorField = new JTextField(20), 2);
         addField(mainPanel, gbc, "Year:", yearField = new JTextField(20), 3);
 
-        // Publisher dropdown
+
         gbc.gridx = 0;
         gbc.gridy = 4;
         mainPanel.add(new JLabel("Publisher:"), gbc);
@@ -41,7 +41,7 @@ public class AddBookDialog extends JDialog {
         publisherCombo.setSelectedIndex(0);
         mainPanel.add(publisherCombo, gbc);
 
-        // Category dropdown
+
         gbc.gridx = 0;
         gbc.gridy = 5;
         mainPanel.add(new JLabel("Category:"), gbc);
@@ -53,7 +53,7 @@ public class AddBookDialog extends JDialog {
 
         addField(mainPanel, gbc, "Total Copies*:", copiesField = new JTextField(20), 6);
 
-        // Button panel
+
         gbc.gridx = 0;
         gbc.gridy = 7;
         gbc.gridwidth = 2;
@@ -73,7 +73,7 @@ public class AddBookDialog extends JDialog {
         buttonPanel.add(cancelButton);
         mainPanel.add(buttonPanel, gbc);
 
-        // Required fields note
+
         gbc.gridy = 8;
         JLabel noteLabel = new JLabel("* Required fields", SwingConstants.CENTER);
         noteLabel.setForeground(Color.RED);
@@ -94,14 +94,14 @@ public class AddBookDialog extends JDialog {
 
     private void loadPublishersAndCategories() {
         try (Connection conn = DBUtil.getConnection()) {
-            // Load publishers
+
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT PublisherID, Name FROM Publisher");
             while (rs.next()) {
                 publisherMap.put(rs.getString("Name"), rs.getInt("PublisherID"));
             }
 
-            // Load categories
+
             rs = stmt.executeQuery("SELECT CategoryID, Name FROM Category");
             while (rs.next()) {
                 categoryMap.put(rs.getString("Name"), rs.getInt("CategoryID"));
@@ -112,7 +112,7 @@ public class AddBookDialog extends JDialog {
     }
 
     private void addBook() {
-        // Validate inputs
+
         if (isbnField.getText().trim().isEmpty() ||
                 titleField.getText().trim().isEmpty() ||
                 authorField.getText().trim().isEmpty() ||
@@ -142,7 +142,7 @@ public class AddBookDialog extends JDialog {
             int publisherId = publisherMap.get(publisherName);
             int categoryId = categoryMap.get(categoryName);
 
-            // Check if ISBN already exists
+
             try (Connection conn = DBUtil.getConnection()) {
                 String checkSql = "SELECT COUNT(*) FROM Book WHERE ISBN = ?";
                 PreparedStatement checkStmt = conn.prepareStatement(checkSql);
@@ -155,7 +155,7 @@ public class AddBookDialog extends JDialog {
                             "Duplicate ISBN", JOptionPane.YES_NO_OPTION);
 
                     if (choice == JOptionPane.YES_OPTION) {
-                        // Update existing book
+
                         String updateSql = """
                                 UPDATE Book SET Title = ?, Author = ?, Year = ?,
                                 PublisherID = ?, CategoryID = ?, Total_Copies = ?
@@ -181,7 +181,7 @@ public class AddBookDialog extends JDialog {
                 }
             }
 
-            // Insert new book
+
             try (Connection conn = DBUtil.getConnection()) {
                 String sql = """
                         INSERT INTO Book (ISBN, Title, Author, Year, PublisherID, CategoryID,
@@ -196,7 +196,7 @@ public class AddBookDialog extends JDialog {
                 pstmt.setInt(5, publisherId);
                 pstmt.setInt(6, categoryId);
                 pstmt.setInt(7, totalCopies);
-                pstmt.setInt(8, totalCopies); // Initially all available
+                pstmt.setInt(8, totalCopies);
 
                 int rows = pstmt.executeUpdate();
                 if (rows > 0) {

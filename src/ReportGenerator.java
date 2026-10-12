@@ -18,7 +18,7 @@ public class ReportGenerator extends JFrame {
 
         tabbedPane = new JTabbedPane();
 
-        // Add report tabs
+
         tabbedPane.addTab("📈 Popular Books", createPopularBooksChart());
         tabbedPane.addTab("📊 Category Distribution", createCategoryChart());
         tabbedPane.addTab("📅 Monthly Activity", createMonthlyActivityChart());
@@ -93,9 +93,9 @@ public class ReportGenerator extends JFrame {
             JFreeChart chart = ChartFactory.createPieChart(
                     "Book Distribution by Category",
                     dataset,
-                    true, // legend
-                    true, // tooltips
-                    false // urls
+                    true,
+                    true,
+                    false
             );
 
             ChartPanel chartPanel = new ChartPanel(chart);
@@ -157,7 +157,7 @@ public class ReportGenerator extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
 
         try (Connection conn = DBUtil.getConnection()) {
-            // Get all statistics
+
             String[][] queries = {
                     { "Total Books", "SELECT COUNT(*) FROM Book" },
                     { "Total Students", "SELECT COUNT(*) FROM Student" },
