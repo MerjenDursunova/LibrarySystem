@@ -11,6 +11,10 @@ A Java Swing desktop application for managing library books, students, borrowing
 - Generate tabular reports
 - Optional AI assistant for students
 
+## Demo Video
+
+https://github.com/user-attachments/assets/51ffc769-0c97-4c03-a075-94f78bb338b0
+
 ## Requirements
 
 - JDK 15 or newer
